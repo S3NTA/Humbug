@@ -65,6 +65,9 @@ import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.block.BlockBurnEvent;
+import org.bukkit.event.block.BlockFadeEvent;
+import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -1175,6 +1178,53 @@ public class Humbug extends JavaPlugin implements Listener {
     Block block = event.getBlock();
     LavaAreaCheck(block, config_.get("cobble_from_lava_scan_radius").getInt());
   }
+
+  // ================================================
+  // Prevent destruction of non-burnables or
+  // non-flammables
+
+  @BahHumbugs ({
+	@BahHumbug(opt="monitor_flammable", def="true"),
+	@BahHumbug(opt="suppress_invalid_flammable", def="true")
+  })
+  @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled=true)
+  public void onBlockBurnEvent(BlockBurnEvent event) {
+    if (config_.get("monitor_flammable").getBool()) {
+      flammableEval(event);
+    }
+	if (config_.get("suppress_invalid_flammable").getBool()) {
+      suppressInvalidFlammable(event);
+	}
+  }
+  @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled=true)
+  public void onBlockFadeEvent(BlockFadeEvent event) {
+    if (config_.get("monitor_flammable").getBool()) {
+      flammableEval(event);
+    }
+	if (config_.get("suppress_invalid_flammable").getBool()) {
+      suppressInvalidFlammable(event);
+	}
+  }
+  @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled=true)
+  public void onBlockIgniteEvent(BlockIgniteEvent event) {
+    if (config_.get("monitor_flammable").getBool()) {
+      flammableEval(event);
+    }
+	if (config_.get("suppress_invalid_flammable").getBool()) {
+      suppressInvalidFlammable(event);
+	}
+  }
+
+  private void flammableEval(BlockEvent be) {
+	  Block block = be.getBlock();
+	  Material mat = block.getType();
+  }
+
+  private void suppressInvalidFlammable(BlockEvent be) {
+    Block block = be.getBlock();
+    Material mat = block.getType();
+  }
+
 
   // ================================================
   // Counteract 1.4.6 protection enchant nerf
