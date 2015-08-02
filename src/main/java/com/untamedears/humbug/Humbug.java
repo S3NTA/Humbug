@@ -59,6 +59,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
@@ -1222,7 +1223,7 @@ public class Humbug extends JavaPlugin implements Listener {
       //
       BlockIgniteEvent bie = (BlockIgniteEvent) be;
       if (!(fMat.isBurnable() || fMat.isFlammable())) {
-        Humbug.warning("Ignite Event captured for " + fMat.getName() + " which "
+        Humbug.warning("Ignite Event captured for " + fMat.name() + " which "
             + (fMat.isBurnable() ? "is " : "isn't ") + "burnable and "
             + (fMat.isFlammable() ? "is " : "isn't ") + "flammable at "
             + fBlock.getLocation() + " caused by " + bie.getCause()
@@ -1232,19 +1233,19 @@ public class Humbug extends JavaPlugin implements Listener {
             bie.getIgnitingEntity() == null ? 
               bie.getIgnitingEntity().getType() + " at " + bie.getIgnitingEntity().getLocation() :
             bie.getPlayer() == null  ?
-              bie.getIgnitingPlayer().getName() + " at " + bie.getIgnitingPlayer().getLocation() :
+              bie.getPlayer().getName() + " at " + bie.getPlayer().getLocation() :
             "--unknown--"));
       }
     } else if (be instanceof BlockFadeEvent) {
       //
       BlockState sBlock = ((BlockFadeEvent) be).getNewState();
       Material sMat = sBlock.getType();
-      Humbug.info("Fade Event captured, " + fMat.getName() + " fading into "
-          + sMat.getName() + " at " + sBlock.getLocation());
+      Humbug.info("Fade Event captured, " + fMat.name() + " fading into "
+          + sMat.name() + " at " + sBlock.getLocation());
     } else { //if (be instanceof BlockBurnEvent) {
       //
       if (!(fMat.isBurnable() || fMat.isFlammable())) {
-        Humbug.warning("Burn Event captured for " + fMat.getName() + " which "
+        Humbug.warning("Burn Event captured for " + fMat.name() + " which "
             + (fMat.isBurnable() ? "is " : "isn't ") + "burnable and "
             + (fMat.isFlammable() ? "is " : "isn't ") + "flammable at "
             + fBlock.getLocation());
@@ -1253,21 +1254,23 @@ public class Humbug extends JavaPlugin implements Listener {
   }
 
   private void suppressInvalidFlammable(BlockEvent be) {
+    Block fBlock = be.getBlock();
+	Material fMat = fBlock.getType();
     if (be instanceof BlockIgniteEvent) {
       //
       BlockIgniteEvent bie = (BlockIgniteEvent) be;
       if (!(fMat.isBurnable() || fMat.isFlammable())) {
-        Humbug.warning("Ignite Event suppressed for " + fMat.getName() + " which "
+        Humbug.warning("Ignite Event suppressed for " + fMat.name() + " which "
             + (fMat.isBurnable() ? "is " : "isn't ") + "burnable and "
             + (fMat.isFlammable() ? "is " : "isn't ") + "flammable at "
             + fBlock.getLocation() + " caused by " + bie.getCause()
             + " as done by " + 
             (bie.getIgnitingBlock() == null ? 
-              bie.getIgnitingBlock().getType() + " at " + bie.getIgnitingBlock().getLocation() :
+              bie.getIgnitingBlock().getType().name() + " at " + bie.getIgnitingBlock().getLocation() :
             bie.getIgnitingEntity() == null ? 
-              bie.getIgnitingEntity().getType() + " at " + bie.getIgnitingEntity().getLocation() :
+              bie.getIgnitingEntity().getType().name() + " at " + bie.getIgnitingEntity().getLocation() :
             bie.getPlayer() == null  ?
-              bie.getIgnitingPlayer().getName() + " at " + bie.getIgnitingPlayer().getLocation() :
+              bie.getPlayer().getName() + " at " + bie.getPlayer().getLocation() :
             "--unknown--"));
         bie.setCancelled(true);
       }
@@ -1276,7 +1279,7 @@ public class Humbug extends JavaPlugin implements Listener {
     } else if (be instanceof BlockBurnEvent) {
       //
       if (!fMat.isBurnable()) {
-        Humbug.warning("Burn Event suppressed for " + fMat.getName() + " which "
+        Humbug.warning("Burn Event suppressed for " + fMat.name() + " which "
             + (fMat.isBurnable() ? "is " : "isn't ") + "burnable and "
             + (fMat.isFlammable() ? "is " : "isn't ") + "flammable at "
             + fBlock.getLocation());
