@@ -1223,18 +1223,22 @@ public class Humbug extends JavaPlugin implements Listener {
       //
       BlockIgniteEvent bie = (BlockIgniteEvent) be;
       if (!(fMat.isBurnable() || fMat.isFlammable())) {
+        Block under = fBlock.getRelative(0,-1,0);
+        Material uMat = under.getType();
         Humbug.warning("Ignite Event captured for " + fMat.name() + " which "
             + (fMat.isBurnable() ? "is " : "isn't ") + "burnable and "
             + (fMat.isFlammable() ? "is " : "isn't ") + "flammable at "
             + fBlock.getLocation() + " caused by " + bie.getCause()
             + " as done by " + 
-            (bie.getIgnitingBlock() == null ? 
+            (bie.getIgnitingBlock() != null ? 
               bie.getIgnitingBlock().getType() + " at " + bie.getIgnitingBlock().getLocation() :
-            bie.getIgnitingEntity() == null ? 
+            bie.getIgnitingEntity() != null ? 
               bie.getIgnitingEntity().getType() + " at " + bie.getIgnitingEntity().getLocation() :
-            bie.getPlayer() == null  ?
+            bie.getPlayer() != null  ?
               bie.getPlayer().getName() + " at " + bie.getPlayer().getLocation() :
-            "--unknown--"));
+            "--unknown--") + " overtop block " + (uMat != null ? uMat.name() : "--empty--")
+            + " which " + (uMat.isBurnable() ? "is " : "isn't ") + "burnable and "
+            + (uMat.isFlammable() ? "is " : "isn't ") + "flammable");
       }
     } else if (be instanceof BlockFadeEvent) {
       //
@@ -1259,17 +1263,17 @@ public class Humbug extends JavaPlugin implements Listener {
     if (be instanceof BlockIgniteEvent) {
       //
       BlockIgniteEvent bie = (BlockIgniteEvent) be;
-      if (!(fMat.isBurnable() || fMat.isFlammable())) {
+      if (!(fMat.isBurnable() || fMat.isFlammable()) && !fMat.equals(Material.AIR)) {
         Humbug.warning("Ignite Event suppressed for " + fMat.name() + " which "
             + (fMat.isBurnable() ? "is " : "isn't ") + "burnable and "
             + (fMat.isFlammable() ? "is " : "isn't ") + "flammable at "
             + fBlock.getLocation() + " caused by " + bie.getCause()
             + " as done by " + 
-            (bie.getIgnitingBlock() == null ? 
+            (bie.getIgnitingBlock() != null ? 
               bie.getIgnitingBlock().getType().name() + " at " + bie.getIgnitingBlock().getLocation() :
-            bie.getIgnitingEntity() == null ? 
+            bie.getIgnitingEntity() != null ? 
               bie.getIgnitingEntity().getType().name() + " at " + bie.getIgnitingEntity().getLocation() :
-            bie.getPlayer() == null  ?
+            bie.getPlayer() != null  ?
               bie.getPlayer().getName() + " at " + bie.getPlayer().getLocation() :
             "--unknown--"));
         bie.setCancelled(true);
