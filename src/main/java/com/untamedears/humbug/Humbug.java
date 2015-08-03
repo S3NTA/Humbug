@@ -1263,7 +1263,7 @@ public class Humbug extends JavaPlugin implements Listener {
     if (be instanceof BlockIgniteEvent) {
       //
       BlockIgniteEvent bie = (BlockIgniteEvent) be;
-      if (!(fMat.isBurnable() || fMat.isFlammable()) && !fMat.equals(Material.AIR)) {
+      if (!(fMat.isBurnable() || fMat.isFlammable()) && !(fMat.equals(Material.AIR) || fMat.equals(Material.FIRE))) {
         Humbug.warning("Ignite Event suppressed for " + fMat.name() + " which "
             + (fMat.isBurnable() ? "is " : "isn't ") + "burnable and "
             + (fMat.isFlammable() ? "is " : "isn't ") + "flammable at "
