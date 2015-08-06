@@ -69,6 +69,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
+import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -1215,6 +1216,16 @@ public class Humbug extends JavaPlugin implements Listener {
       suppressInvalidFlammable(event);
 	}
   }
+  @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled=true)
+  public void onBlockSpreadEvent(BlockSpreadEvent event) {
+    if (config_.get("monitor_flammable").getBool()) {
+      flammableEval(event);
+    }
+	if (config_.get("suppress_invalid_flammable").getBool()) {
+      suppressInvalidFlammable(event);
+	}
+  }
+
 
   private void flammableEval(BlockEvent be) {
     Block fBlock = be.getBlock();
@@ -1222,7 +1233,7 @@ public class Humbug extends JavaPlugin implements Listener {
     if (be instanceof BlockIgniteEvent) {
       //
       BlockIgniteEvent bie = (BlockIgniteEvent) be;
-      if (!(fMat.isBurnable() || fMat.isFlammable())) {
+      //if (!(fMat.isBurnable() || fMat.isFlammable())) {
         Block under = fBlock.getRelative(0,-1,0);
         Material uMat = under.getType();
         Humbug.warning("Ignite Event captured for " + fMat.name() + " which "
@@ -1239,21 +1250,31 @@ public class Humbug extends JavaPlugin implements Listener {
             "--unknown--") + " overtop block " + (uMat != null ? uMat.name() : "--empty--")
             + " which " + (uMat.isBurnable() ? "is " : "isn't ") + "burnable and "
             + (uMat.isFlammable() ? "is " : "isn't ") + "flammable");
-      }
+      //}
     } else if (be instanceof BlockFadeEvent) {
       //
       BlockState sBlock = ((BlockFadeEvent) be).getNewState();
       Material sMat = sBlock.getType();
       Humbug.info("Fade Event captured, " + fMat.name() + " fading into "
           + sMat.name() + " at " + sBlock.getLocation());
+    } else if (be instanceof BlockSpreadEvent) {
+      //
+      BlockSpreadEvent bse = (BlockSpreadEvent) be;
+      BlockState nBlock = bse.getNewState();
+      Block srcBlock = bse.getSource();
+      Material nMat = nBlock.getType();
+      Material srcMat = srcBlock.getType();
+      Humbug.info("Spread Event captured, " + srcMat.name() + " at " + srcBlock.getLocation()
+          + " spreading into " + fBlock.getLocation() + " which was " + fMat.name()
+          + " and will be " + nMat.name() );
     } else { //if (be instanceof BlockBurnEvent) {
       //
-      if (!(fMat.isBurnable() || fMat.isFlammable())) {
+      //if (!(fMat.isBurnable() || fMat.isFlammable())) {
         Humbug.warning("Burn Event captured for " + fMat.name() + " which "
             + (fMat.isBurnable() ? "is " : "isn't ") + "burnable and "
             + (fMat.isFlammable() ? "is " : "isn't ") + "flammable at "
             + fBlock.getLocation());
-      }
+      //}
     }
   }
 
@@ -1280,6 +1301,8 @@ public class Humbug extends JavaPlugin implements Listener {
       }
     } else if (be instanceof BlockFadeEvent) {
       // Don't have enough info yet to suppress bad events here, will just observe.
+    } else if (be instanceof BlockSpreadEvent) {
+      // noop
     } else if (be instanceof BlockBurnEvent) {
       //
       if (!fMat.isBurnable()) {
