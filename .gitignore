@@ -1,16 +1,4 @@
-*.class
-
-# Package Files #
-*.jar
-*.war
-*.ear
-
-# Vim
-*~
-*.swp
-
-# Misc
-*.bat
-.gitignore
-/bin
 /target/
+.classpath
+.settings/**
+.project

@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,12 +15,11 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.minecraft.server.v1_10_R1.EntityEnderPearl;
-import net.minecraft.server.v1_10_R1.EntityTypes;
-import net.minecraft.server.v1_10_R1.Item;
-import net.minecraft.server.v1_10_R1.ItemEnderPearl;
-import net.minecraft.server.v1_10_R1.MinecraftKey;
-import net.minecraft.server.v1_10_R1.RegistryID;
+import net.minecraft.server.v1_11_R1.EntityTypes;
+import net.minecraft.server.v1_11_R1.Item;
+import net.minecraft.server.v1_11_R1.ItemEnderPearl;
+import net.minecraft.server.v1_11_R1.MinecraftKey;
+import net.minecraft.server.v1_11_R1.RegistryMaterials;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -34,8 +32,8 @@ import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
-import org.bukkit.block.Sign;
 import org.bukkit.block.Hopper;
+import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -80,15 +78,14 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.EntityToggleGlideEvent;
 import org.bukkit.event.entity.ExpBottleEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.SheepDyeWoolEvent;
-import org.bukkit.event.entity.EntityToggleGlideEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -109,13 +106,12 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.FurnaceRecipe;
-import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -123,7 +119,6 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
@@ -300,7 +295,9 @@ public class Humbug extends JavaPlugin implements Listener {
       teleport_info.last_teleport = current_time;
       teleport_info.last_notification =
           current_time - (PEARL_NOTIFICATION_WINDOW + 100);  // Force notify
-      combatTag_.tagPlayer(player);
+      
+      if(combatTag_ != null)
+    	  combatTag_.tagPlayer(player);
     } else {
       time_diff = current_time - teleport_info.last_teleport;
       if (PEARL_THROTTLE_WINDOW > time_diff) {
@@ -308,7 +305,9 @@ public class Humbug extends JavaPlugin implements Listener {
         event.setCancelled(true);
       } else {
         // New pearl thrown outside of throttle window
-        combatTag_.tagPlayer(player);
+    	if(combatTag_ != null)
+    		combatTag_.tagPlayer(player);
+    	
         teleport_info.last_teleport = current_time;
         teleport_info.last_notification =
             current_time - (PEARL_NOTIFICATION_WINDOW + 100);  // Force notify
@@ -318,16 +317,19 @@ public class Humbug extends JavaPlugin implements Listener {
     final long notify_diff = current_time - teleport_info.last_notification;
     if (notify_diff > PEARL_NOTIFICATION_WINDOW) {
       teleport_info.last_notification = current_time;
-      Integer tagCooldown = combatTag_.remainingSeconds(player);
-      if (tagCooldown != null) {
-        player.sendMessage(String.format(
-            "Pearl in %d seconds. Combat Tag in %d seconds.",
-            (PEARL_THROTTLE_WINDOW - time_diff + 500) / 1000,
-            tagCooldown));
-      } else {
-        player.sendMessage(String.format(
-            "Pearl Teleport Cooldown: %d seconds",
-            (PEARL_THROTTLE_WINDOW - time_diff + 500) / 1000));
+      
+      if(combatTag_ != null) {
+	      Integer tagCooldown = combatTag_.remainingSeconds(player);
+	      if (tagCooldown != null) {
+	        player.sendMessage(String.format(
+	            "Pearl in %d seconds. Combat Tag in %d seconds.",
+	            (PEARL_THROTTLE_WINDOW - time_diff + 500) / 1000,
+	            tagCooldown));
+	      } else {
+	        player.sendMessage(String.format(
+	            "Pearl Teleport Cooldown: %d seconds",
+	            (PEARL_THROTTLE_WINDOW - time_diff + 500) / 1000));
+	      }
       }
     }
     pearl_teleport_info_.put(player_name, teleport_info);
@@ -511,7 +513,6 @@ public class Humbug extends JavaPlugin implements Listener {
   }
 
   public void dropInventory(Location loc, Inventory inv) {
-    final World world = loc.getWorld();
     final int end = inv.getSize();
     for (int i = 0; i < end; ++i) {
       try {
@@ -927,7 +928,7 @@ public class Humbug extends JavaPlugin implements Listener {
           item.setAmount(1);
         }
       }
-      if(item.isSimilar(mobEquipment.getItemInHand())){
+      if(item.isSimilar(mobEquipment.getItemInMainHand())){
         hand = true;
         item.setAmount(1);
       }
@@ -1342,7 +1343,6 @@ public class Humbug extends JavaPlugin implements Listener {
     if (player.hasPlayedBefore()){
       return;
     }
-    final String playerName = player.getUniqueId().toString();
     giveN00bKit(player);
   }
 
@@ -1666,20 +1666,6 @@ public class Humbug extends JavaPlugin implements Listener {
 	public void dropItemAtLocation(Block b, ItemStack is) {
 		dropItemAtLocation(b.getLocation(), is);
 	}
-  
-  private void damageTool(ItemStack is) {
-	  Material m = is.getType();
-	  if (m != Material.DIAMOND_PICKAXE && m != Material.IRON_AXE && m != Material.WOOD_PICKAXE && 
-			  m != Material.GOLD_PICKAXE && m != Material.STONE_PICKAXE && m != Material.WOOD_PICKAXE) {
-		  return;
-	  }
-	  if(is.getDurability() >= is.getType().getMaxDurability()) {
-          is.setAmount(0);
-      }
-      if(prng_.nextInt(is.getEnchantmentLevel(Enchantment.DURABILITY) + 1) == 0) {
-          is.setDurability((short) (is.getDurability() + 1));
-      }
-  }
 
   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
   public void onBlockFromToEvent(BlockFromToEvent e) {
@@ -2403,6 +2389,7 @@ public class Humbug extends JavaPlugin implements Listener {
     try {
       // They thought they could stop us by preventing us from registering an
       // item. We'll show them
+    	RegistryMaterials<MinecraftKey,Item> a;
       Field idRegistryField = Item.REGISTRY.getClass().getDeclaredField("a");
       idRegistryField.setAccessible(true);
       Object idRegistry = idRegistryField.get(Item.REGISTRY);
@@ -2436,27 +2423,13 @@ public class Humbug extends JavaPlugin implements Listener {
       Item.REGISTRY.a(pearlId, pearlKey, new CustomNMSItemEnderPearl(config_));
 
       // Setup the custom entity
-      Field fieldStringToClass = EntityTypes.class.getDeclaredField("c");
-      Field fieldClassToString = EntityTypes.class.getDeclaredField("d");
-      fieldStringToClass.setAccessible(true);
-      fieldClassToString.setAccessible(true);
+      Field fieldB = EntityTypes.class.getDeclaredField("b");
+      fieldB.setAccessible(true);
       
-      Field fieldClassToId = EntityTypes.class.getDeclaredField("f");
-      Field fieldStringToId = EntityTypes.class.getDeclaredField("g");
-      fieldClassToId.setAccessible(true);
-      fieldStringToId.setAccessible(true);
-      
-      Map mapStringToClass = (Map)fieldStringToClass.get(null);
-      Map mapClassToString = (Map)fieldClassToString.get(null);
-      
-      Map mapClassToId = (Map)fieldClassToId.get(null);
-      Map mapStringToId = (Map)fieldStringToId.get(null);
-      
-      mapStringToClass.put("ThrownEnderpearl",CustomNMSEntityEnderPearl.class);
-      mapStringToId.put("ThrownEnderpearl", Integer.valueOf(14));
-      
-      mapClassToString.put(CustomNMSEntityEnderPearl.class, "ThrownEnderpearl");
-      mapClassToId.put(CustomNMSEntityEnderPearl.class, Integer.valueOf(14));
+      RegistryMaterials<MinecraftKey, Class<? extends Entity>> b =
+    		  (RegistryMaterials<MinecraftKey, Class<? extends Entity>>)fieldB.get(null);
+
+      b.a(14, pearlKey, (Class<? extends Entity>)CustomNMSEntityEnderPearl.class);
     } catch (Exception e) {
       Humbug.severe("Exception while overriding MC's ender pearl class");
       e.printStackTrace();

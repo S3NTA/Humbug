@@ -1,6 +1,5 @@
 package com.untamedears.humbug;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashSet;
@@ -11,14 +10,12 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.google.common.base.Splitter;
-import com.untamedears.humbug.Humbug;
 import com.untamedears.humbug.annotations.BahHumbug;
 import com.untamedears.humbug.annotations.BahHumbugs;
 import com.untamedears.humbug.annotations.ConfigOption;
@@ -31,7 +28,6 @@ public class Config {
   private static final boolean debug_log_ = false;
   private static final int quartz_gravel_percentage_ = 0;
   private static final int cobble_from_lava_scan_radius_ = 0;
-  private static final String find_end_portals_ = null;
   private static final int projectile_slow_ticks_ = 100;
   private static final int loot_multiplier_ = 1;
   private static final String book_name_ = "Welcome to Devoted";
