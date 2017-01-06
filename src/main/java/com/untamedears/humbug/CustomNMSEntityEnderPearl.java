@@ -7,7 +7,6 @@ import net.minecraft.server.v1_11_R1.World;
 
 import org.bukkit.Bukkit;
 
-@Deprecated
 public class CustomNMSEntityEnderPearl extends EntityEnderPearl {
   private long tick_ = 0L;
   private double startDeltaX_ = 0.0D;
@@ -17,7 +16,7 @@ public class CustomNMSEntityEnderPearl extends EntityEnderPearl {
   private double startX_ = 0.0D;
   private double startY_ = 0.0D;
   private double startZ_ = 0.0D;
-  public double y_adjust_;
+  private double y_adjust_;
 
   public CustomNMSEntityEnderPearl(World world) {
     super(world);
