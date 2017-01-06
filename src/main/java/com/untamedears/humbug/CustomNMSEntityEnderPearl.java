@@ -17,6 +17,10 @@ public class CustomNMSEntityEnderPearl extends EntityEnderPearl {
   private double startY_ = 0.0D;
   private double startZ_ = 0.0D;
   private double y_adjust_;
+  
+  public double getYAdjust() {
+	  return y_adjust_;
+  }
 
   public CustomNMSEntityEnderPearl(World world) {
     super(world);

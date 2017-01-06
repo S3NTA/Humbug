@@ -2387,6 +2387,10 @@ public class Humbug extends JavaPlugin implements Listener {
   @SuppressWarnings("unchecked")
   @BahHumbug(opt="ender_pearl_gravity", type=OptType.Double, def="0.060000")
   public void hookEnderPearls() {
+	if(config_.get("ender_pearl_gravity").getDouble() == 0) {
+		return;
+	}
+	  
     try {
       Item pearlItem = new CustomNMSItemEnderPearl(config_);
 
