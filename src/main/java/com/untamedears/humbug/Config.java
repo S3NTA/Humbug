@@ -119,10 +119,14 @@ public class Config {
       return;
     }
     dynamicOptions_.put(bug.opt(), new ConfigOption(bug));
+    
+    Humbug.info(" - " + bug.opt());
   }
 
   private void scanAnnotations() {
     try {
+      Humbug.info("Options:");
+    	
       for (Method method : Humbug.class.getMethods()) {
         BahHumbug bug = method.getAnnotation(BahHumbug.class);
         if (bug != null) {

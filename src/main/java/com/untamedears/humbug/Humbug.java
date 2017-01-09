@@ -17,9 +17,10 @@ import java.util.logging.Logger;
 
 import net.minecraft.server.v1_11_R1.EntityTypes;
 import net.minecraft.server.v1_11_R1.Item;
-import net.minecraft.server.v1_11_R1.ItemEnderPearl;
 import net.minecraft.server.v1_11_R1.MinecraftKey;
+import net.minecraft.server.v1_11_R1.RegistryID;
 import net.minecraft.server.v1_11_R1.RegistryMaterials;
+import net.minecraft.server.v1_11_R1.RegistrySimple;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -1213,7 +1214,9 @@ public class Humbug extends JavaPlugin implements Listener {
     PlayerInventory inventory = defender.getInventory();
     int enchant_level = 0;
     for (ItemStack armor : inventory.getArmorContents()) {
-      enchant_level += armor.getEnchantmentLevel(Enchantment.PROTECTION_ENVIRONMENTAL);
+      if(armor != null) {
+        enchant_level += armor.getEnchantmentLevel(Enchantment.PROTECTION_ENVIRONMENTAL);
+      }
     }
     int damage_adjustment = 0;
     if (enchant_level >= 3 && enchant_level <= 6) {
@@ -2383,53 +2386,52 @@ public class Humbug extends JavaPlugin implements Listener {
   public final static int pearlId = 368;
   public final static MinecraftKey pearlKey = new MinecraftKey("ender_pearl");
 
-  @SuppressWarnings({ "rawtypes", "unchecked" })
+  @SuppressWarnings("unchecked")
   @BahHumbug(opt="ender_pearl_gravity", type=OptType.Double, def="0.060000")
-  private void hookEnderPearls() {
+  public void hookEnderPearls() {
+	if(config_.get("ender_pearl_gravity").getDouble() == 0) {
+		return;
+	}
+	  
     try {
-      // They thought they could stop us by preventing us from registering an
-      // item. We'll show them
-    	RegistryMaterials<MinecraftKey,Item> a;
-      Field idRegistryField = Item.REGISTRY.getClass().getDeclaredField("a");
-      idRegistryField.setAccessible(true);
-      Object idRegistry = idRegistryField.get(Item.REGISTRY);
+      Item pearlItem = new CustomNMSItemEnderPearl(config_);
 
-      Field idRegistryMapField = idRegistry.getClass().getDeclaredField("a");
-      idRegistryMapField.setAccessible(true);
-      Object idRegistryMap = idRegistryMapField.get(idRegistry);
+      //Add Item - Step 1
+      Field registry_aField = Item.REGISTRY.getClass().getDeclaredField("a");
+      registry_aField.setAccessible(true);
 
-      Field idRegistryItemsField = idRegistry.getClass().getDeclaredField("b");
-      idRegistryItemsField.setAccessible(true);
-      Object idRegistryItemList = idRegistryItemsField.get(idRegistry);
+      RegistryID<Item> registry_a = (RegistryID<Item>)registry_aField.get(Item.REGISTRY);
+      
+      Field registry_a_fField = registry_a.getClass().getDeclaredField("f");
+      registry_a_fField.setAccessible(true);
+      
+      Field registry_a_eField = registry_a.getClass().getDeclaredField("e");
+      registry_a_eField.setAccessible(true);
+      
+      int a_f = (int)registry_a_fField.get(registry_a);
+      int a_e = (int)registry_a_eField.get(registry_a);
+      
+      registry_a.a(pearlItem, pearlId);
+      
+      registry_a_fField.set(registry_a, a_f);
+      registry_a_eField.set(registry_a, a_e);
 
-      // Remove ItemEnderPearl from the ID Registry
-      Item idItem = null;
-      Iterator<Item> itemListIter = ((List<Item>)idRegistryItemList).iterator();
-      while (itemListIter.hasNext()) {
-        idItem = itemListIter.next();
-        if (idItem == null) {
-          continue;
-        }
-        if (!(idItem instanceof ItemEnderPearl)) {
-          continue;
-        }
-        itemListIter.remove();
-        break;
-      }
-      if (idItem != null) {
-        ((Map<Item, Integer>)idRegistryMap).remove(idItem);
-      }
-      // Register our custom pearl Item.
-      Item.REGISTRY.a(pearlId, pearlKey, new CustomNMSItemEnderPearl(config_));
+      //Add Item - Step 2
+      Field registry_cField = RegistrySimple.class.getDeclaredField("c");
+      registry_cField.setAccessible(true);
+      
+      Map<MinecraftKey, Item> registry_c = (Map<MinecraftKey, Item>)registry_cField.get(Item.REGISTRY);
+      
+      registry_c.put(pearlKey, pearlItem);
 
       // Setup the custom entity
       Field fieldB = EntityTypes.class.getDeclaredField("b");
       fieldB.setAccessible(true);
       
-      RegistryMaterials<MinecraftKey, Class<? extends Entity>> b =
-    		  (RegistryMaterials<MinecraftKey, Class<? extends Entity>>)fieldB.get(null);
+      RegistryMaterials<MinecraftKey, Class<? extends net.minecraft.server.v1_11_R1.Entity>> b =
+    		  (RegistryMaterials<MinecraftKey, Class<? extends net.minecraft.server.v1_11_R1.Entity>>)fieldB.get(null);
 
-      b.a(14, pearlKey, (Class<? extends Entity>)CustomNMSEntityEnderPearl.class);
+      b.a(14, pearlKey, CustomNMSEntityEnderPearl.class);
     } catch (Exception e) {
       Humbug.severe("Exception while overriding MC's ender pearl class");
       e.printStackTrace();
@@ -2747,7 +2749,7 @@ public class Humbug extends JavaPlugin implements Listener {
   public void onLoad()
   {
     loadConfiguration();
-    //hookEnderPearls();
+    hookEnderPearls();
     info("Loaded");
   }
 
