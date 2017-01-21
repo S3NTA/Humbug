@@ -963,18 +963,6 @@ public class Humbug extends JavaPlugin implements Listener {
     return material.equals(Material.GOLDEN_APPLE);
   }
 
-  public boolean isCrackedStoneBrick(ItemStack item) {
-	// Cracked stone bricks are stone bricks with 2 durability
-	if (item == null) {
-		return false;
-	}
-	if (item.getDurability() != 2) {
-		return false;
-	}
-	Material material = item.getType();
-	return material.equals(Material.SMOOTH_BRICK);
-  }
-
   public void replaceEnchantedGoldenApple(
       String player_name, ItemStack item, int inventory_max_stack_size) {
     if (!isEnchantedGoldenApple(item)) {
@@ -991,39 +979,41 @@ public class Humbug extends JavaPlugin implements Listener {
     item.setAmount(stack_size);
   }
   
-  @BahHumbug(opt="ench_gold_app_craftable", def = "false")
+  @BahHumbugs({
+    @BahHumbug(opt="ench_gold_app_craftable", def = "false"),
+    @BahHumbug(opt="cracked_stone_craftable", def = "true")
+  })
   public void removeRecipies() {
-    if (config_.get("ench_gold_app_craftable").getBool()&&config_.get("moss_stone_craftable").getBool()&&config_.get("cracked_stone_craftable").getBool()) {
+    if (config_.get("ench_gold_app_craftable").getBool()&&config_.get("cracked_stone_craftable").getBool()) {
       return;
     }
     Iterator<Recipe> it = getServer().recipeIterator();
     while (it.hasNext()) {
       Recipe recipe = it.next();
       ItemStack resulting_item = recipe.getResult();
-      if (!config_.get("ench_gold_app_craftable").getBool() &&
-          isEnchantedGoldenApple(resulting_item)) {
+      if (!config_.get("ench_gold_app_craftable").getBool() && isEnchantedGoldenApple(resulting_item)) {
         it.remove();
         info("Enchanted Golden Apple Recipe disabled");
       }
-      if (recipe instanceof FurnaceRecipe) {
-          FurnaceRecipe fre = (FurnaceRecipe) recipe;
-          if (isCrackedStone(fre.getResult())) {
-                  it.remove();
-                  info("Cracked Stone Furnace Recipe disabled");
-          }
-		}
+      if (!config_.get("cracked_stone_craftable").getBool() && recipe instanceof FurnaceRecipe) {
+        FurnaceRecipe fre = (FurnaceRecipe) recipe;
+        if (isCrackedStone(fre.getResult())) {
+          it.remove();
+          info("Cracked Stone Furnace Recipe disabled");
+        }
+      }
     }
   }
-  
+
   public boolean isCrackedStone(ItemStack item) {
-	  if (item == null)
-		  return false;
-	  if (item.getDurability() != 2){
-		  return false;
-	  }
+    if (item == null)
+      return false;
+    if (item.getDurability() != 2){
+      return false;
+    }
 	  
-	  Material material = item.getType();
-	  return material.equals(Material.SMOOTH_BRICK);
+    Material material = item.getType();
+    return material.equals(Material.SMOOTH_BRICK);
   }
 
   // EventHandler registered in onPlayerInteractAll
@@ -1037,8 +1027,7 @@ public class Humbug extends JavaPlugin implements Listener {
     Player player = event.getPlayer();
     Inventory inventory = player.getInventory();
     ItemStack item = event.getItem();
-    replaceEnchantedGoldenApple(
-        player.getName(), item, inventory.getMaxStackSize());
+    replaceEnchantedGoldenApple(player.getName(), item, inventory.getMaxStackSize());
   }
 
   // ================================================
