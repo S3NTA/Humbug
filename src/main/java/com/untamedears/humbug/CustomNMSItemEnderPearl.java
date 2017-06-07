@@ -1,17 +1,17 @@
 package com.untamedears.humbug;
 
 
-import net.minecraft.server.v1_11_R1.EntityHuman;
-import net.minecraft.server.v1_11_R1.EntityPlayer;
-import net.minecraft.server.v1_11_R1.EnumHand;
-import net.minecraft.server.v1_11_R1.EnumInteractionResult;
-import net.minecraft.server.v1_11_R1.InteractionResultWrapper;
-import net.minecraft.server.v1_11_R1.ItemEnderPearl;
-import net.minecraft.server.v1_11_R1.ItemStack;
-import net.minecraft.server.v1_11_R1.SoundCategory;
-import net.minecraft.server.v1_11_R1.SoundEffects;
-import net.minecraft.server.v1_11_R1.StatisticList;
-import net.minecraft.server.v1_11_R1.World;
+import net.minecraft.server.v1_12_R1.EntityHuman;
+import net.minecraft.server.v1_12_R1.EntityPlayer;
+import net.minecraft.server.v1_12_R1.EnumHand;
+import net.minecraft.server.v1_12_R1.EnumInteractionResult;
+import net.minecraft.server.v1_12_R1.InteractionResultWrapper;
+import net.minecraft.server.v1_12_R1.ItemEnderPearl;
+import net.minecraft.server.v1_12_R1.ItemStack;
+import net.minecraft.server.v1_12_R1.SoundCategory;
+import net.minecraft.server.v1_12_R1.SoundEffects;
+import net.minecraft.server.v1_12_R1.StatisticList;
+import net.minecraft.server.v1_12_R1.World;
 
 public class CustomNMSItemEnderPearl extends ItemEnderPearl {
 	private Config config;
@@ -49,8 +49,8 @@ public class CustomNMSItemEnderPearl extends ItemEnderPearl {
 			itemstack.subtract(1);
 		}
 		    
-		world.a(null, entityhuman.locX, entityhuman.locY, entityhuman.locZ, SoundEffects.bj, SoundCategory.NEUTRAL, 0.5F, 0.4F / (j.nextFloat() * 0.4F + 0.8F));
-		entityhuman.di().a(this, 20);
+		world.a(null, entityhuman.locX, entityhuman.locY, entityhuman.locZ, SoundEffects.bn, SoundCategory.NEUTRAL, 0.5F, 0.4F / (j.nextFloat() * 0.4F + 0.8F));
+		entityhuman.getCooldownTracker().a(this, 20);
 		    
 		entityhuman.b(StatisticList.b(this));
 		return new InteractionResultWrapper<ItemStack>(EnumInteractionResult.SUCCESS, itemstack);

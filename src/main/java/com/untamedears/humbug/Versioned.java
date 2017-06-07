@@ -1,9 +1,9 @@
 package com.untamedears.humbug;
 
-import net.minecraft.server.v1_11_R1.EntityHorse;
-import net.minecraft.server.v1_11_R1.GenericAttributes;
+import net.minecraft.server.v1_12_R1.EntityHorse;
+import net.minecraft.server.v1_12_R1.GenericAttributes;
 
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftHorse;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftHorse;
 import org.bukkit.entity.Entity;
 
 public class Versioned {

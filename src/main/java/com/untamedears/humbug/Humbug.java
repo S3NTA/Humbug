@@ -15,12 +15,12 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.minecraft.server.v1_11_R1.EntityTypes;
-import net.minecraft.server.v1_11_R1.Item;
-import net.minecraft.server.v1_11_R1.MinecraftKey;
-import net.minecraft.server.v1_11_R1.RegistryID;
-import net.minecraft.server.v1_11_R1.RegistryMaterials;
-import net.minecraft.server.v1_11_R1.RegistrySimple;
+import net.minecraft.server.v1_12_R1.EntityTypes;
+import net.minecraft.server.v1_12_R1.Item;
+import net.minecraft.server.v1_12_R1.MinecraftKey;
+import net.minecraft.server.v1_12_R1.RegistryID;
+import net.minecraft.server.v1_12_R1.RegistryMaterials;
+import net.minecraft.server.v1_12_R1.RegistrySimple;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -51,6 +51,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Skeleton;
+import org.bukkit.entity.WitherSkeleton;
 import org.bukkit.entity.Skeleton.SkeletonType;
 import org.bukkit.entity.Vehicle;
 import org.bukkit.entity.minecart.HopperMinecart;
@@ -826,20 +827,18 @@ public class Humbug extends JavaPlugin implements Listener {
   public static final int skull_id_ = Material.SKULL_ITEM.getId();
   public static final byte wither_skull_data_ = 1;
 
+  // TODO: No idea if still working in 1.12 yet
   @BahHumbug(opt="wither_skull_drop_rate", type=OptType.Int)
   public void adjustWitherSkulls(EntityDeathEvent event) {
     Entity entity = event.getEntity();
-    if (!(entity instanceof Skeleton)) {
+    if (!(entity instanceof WitherSkeleton)) {
       return;
     }
     int rate = config_.get("wither_skull_drop_rate").getInt();
     if (rate < 0 || rate > 1000000) {
       return;
     }
-    Skeleton skele = (Skeleton)entity;
-    if (skele.getSkeletonType() != SkeletonType.WITHER) {
-      return;
-    }
+    WitherSkeleton skele = (WitherSkeleton)entity;
     List<ItemStack> drops = event.getDrops();
     ItemStack item;
     int i = drops.size() - 1;
@@ -2370,7 +2369,7 @@ public class Humbug extends JavaPlugin implements Listener {
   }
 
   // ================================================
-  // Adjust ender pearl gravity
+  // Adjust ender pearl gravity -- confirmed correct for v1.12
 
   public final static int pearlId = 368;
   public final static MinecraftKey pearlKey = new MinecraftKey("ender_pearl");
@@ -2417,8 +2416,8 @@ public class Humbug extends JavaPlugin implements Listener {
       Field fieldB = EntityTypes.class.getDeclaredField("b");
       fieldB.setAccessible(true);
       
-      RegistryMaterials<MinecraftKey, Class<? extends net.minecraft.server.v1_11_R1.Entity>> b =
-    		  (RegistryMaterials<MinecraftKey, Class<? extends net.minecraft.server.v1_11_R1.Entity>>)fieldB.get(null);
+      RegistryMaterials<MinecraftKey, Class<? extends net.minecraft.server.v1_12_R1.Entity>> b =
+    		  (RegistryMaterials<MinecraftKey, Class<? extends net.minecraft.server.v1_12_R1.Entity>>)fieldB.get(null);
 
       b.a(14, pearlKey, CustomNMSEntityEnderPearl.class);
     } catch (Exception e) {
