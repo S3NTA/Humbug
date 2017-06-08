@@ -1,6 +1,8 @@
 Humbug
 ======
 
+Note: This plugin is slowly being deprecated in favor of [SimpleAdminHacks](https://www.github.com/DevotedMC/SimpleAdminHacks/).
+
 Minecraft server plug-in: Simply toggles various functionality
 
 - Disables Anvil use.
