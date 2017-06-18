@@ -2807,48 +2807,6 @@ public class Humbug extends JavaPlugin implements Listener {
       Command command,
       String label,
       String[] args) {
-    /*if (sender instanceof Player && command.getName().equals("invsee")) {
-      if (args.length < 1) {
-        sender.sendMessage("Provide a name");
-        return false;
-      }
-      onInvseeCommand((Player)sender, args[0]);
-      return true;
-    }*/
-    if (sender instanceof Player
-        && command.getName().equals("introbook")) {
-      if (!config_.get("drop_newbie_book").getBool()) {
-        return true;
-      }
-      Player sendBookTo = (Player)sender;
-      if (args.length >= 1) {
-        Player possible = Bukkit.getPlayerExact(args[0]);
-        if (possible != null) {
-          sendBookTo = possible;
-        }
-      }
-      giveN00bBook(sendBookTo);
-      return true;
-    }
-	if (((sender instanceof Player && ((Player)sender).isOp()) ||
-		(sender instanceof ConsoleCommandSender)) &&
-        command.getName().equals("introkit")) {
-      if (!config_.get("drop_newbie_kit").getBool()) {
-        return true;
-      }
-      Player sendKitTo = sender instanceof Player ? (Player)sender : null;
-      if (args.length >= 1) {
-        Player possible = Bukkit.getPlayerExact(args[0]);
-        if (possible != null) {
-          sendKitTo = possible;
-        }
-      }
-      if (sendKitTo != null) {
-		info("Sending welcome kit to " + sendKitTo.getDisplayName());
-        giveN00bKit(sendKitTo);
-      }
-      return true;
-    }
     if (sender instanceof Player
         && command.getName().equals("bahhumbug")) {
       giveHolidayPackage((Player)sender);
