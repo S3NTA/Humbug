@@ -6,7 +6,7 @@
 	<groupId>com.untamedears</groupId>
 	<artifactId>Humbug</artifactId>
 	<packaging>jar</packaging>
-	<version>1.11.0</version>
+	<version>1.11.1</version>
 	<name>Humbug</name>
 	<url>https://github.com/DevotedMC/Humbug</url>
 
@@ -55,7 +55,7 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot</artifactId>
-			<version>1.12-R0.1-SNAPSHOT</version>
+			<version>1.12.2-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
