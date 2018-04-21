@@ -781,7 +781,7 @@ public class Humbug extends JavaPlugin implements Listener {
       }
       if(prng_.nextInt(1000000) < adjustedwither) {
         e.setCancelled(true);
-        world.spawnEntity(loc, EntityType.SKELETON);
+        world.spawnEntity(loc, EntityType.WITHER_SKELETON);
       } else if(prng_.nextInt(1000000) < adjustedghast) {
         e.setCancelled(true);
         int x = loc.getBlockX();
@@ -808,16 +808,11 @@ public class Humbug extends JavaPlugin implements Listener {
         loc.setY(heights.get(prng_.nextInt(heights.size())));
         world.spawnEntity(loc, EntityType.GHAST);
       }
-    } else if (e.getEntityType() == EntityType.SKELETON
+    } else if (e.getEntityType() == EntityType.WITHER_SKELETON
         && e.getSpawnReason() == CreatureSpawnEvent.SpawnReason.CUSTOM) {
-      Entity entity = e.getEntity();
-      if (entity instanceof Skeleton) {
-        Skeleton skele = (Skeleton)entity;
-        skele.setSkeletonType(SkeletonType.WITHER);
+        WitherSkeleton skele = (WitherSkeleton)e.getEntity();
         EntityEquipment entity_equip = skele.getEquipment();
-        entity_equip.setItemInHand(new ItemStack(Material.STONE_SWORD));
-        entity_equip.setItemInHandDropChance(0.0F);
-      }
+        entity_equip.setItemInMainHandDropChance(0.0F);
     }
   }
 
