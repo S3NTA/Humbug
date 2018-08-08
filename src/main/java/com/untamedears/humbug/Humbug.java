@@ -2606,6 +2606,16 @@ public class Humbug extends JavaPlugin implements Listener {
     }
   }
   
+  @BahHumbug(opt="disable_mining_fatigue", def="true")
+  public void onInteractMiningSomething(PlayerInteractEvent event)
+  {
+    if (!config_.get("disable_mining_fatigue").getBool()) {
+        return;
+    }
+    Player p = event.getPlayer();
+    p.removePotionEffect(PotionEffectType.SLOW_DIGGING);
+  }
+  
   // ================================================
   // Enforce good sign data length
 
