@@ -2727,6 +2727,17 @@ public class Humbug extends JavaPlugin implements Listener {
 	  }
   }
   
+  @BahHumbug(opt="disable_ender_crystal_explosion", def="true")
+  @EventHandler
+  public void disableEnderCrystal(EntityDamageByEntityEvent e) {
+	  if (!config_.get("disable_ender_crystal_explosion").getBool()) {
+	      return;
+	    }
+	  if (e.getDamager().getType() == EntityType.ENDER_CRYSTAL) {
+		  e.setCancelled(true);
+	  }
+  }
+  
   //there is a bug in minecraft 1.8, which allows fire and vines to spread into unloaded chunks
   //where they can replace any existing block
   @EventHandler(priority = EventPriority.LOWEST)
